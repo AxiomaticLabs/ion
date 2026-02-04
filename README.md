@@ -23,10 +23,11 @@ Ion     [██████      ] 0.59s ⚡
 Bun     [████████    ] 0.82s
 Node.js [████████████] 1.29s
 Deno    [██████████████████] 1.88s
+```
+ Tested on MacBook Pro (Intel Chip), reading 1073741824 bytes.
 
-Tested on MacBook Pro (Apple Silicon), reading 1073741824 bytes.
-
-<details> <summary><strong>View Raw Benchmark Logs</strong></summary>
+<details>
+<summary><strong>View Raw Benchmark Logs</strong></summary>
 
 ```zsh
 amol@Amols-MBP ion % node ./tests/node.js 
