@@ -57,8 +57,9 @@ const allLogFiles = Ion.fs.readDirSync('logs/');
 const logFiles = [];
 for (let i = 0; i < allLogFiles.length; i++) {
     const f = allLogFiles[i];
-    if (f.indexOf('.log') === f.length - 4) {
-        logFiles.push(f);
+    const fileName = typeof f === 'string' ? f : f.name || f.toString();
+    if (fileName.indexOf('.log') === fileName.length - 4) {
+        logFiles.push(fileName);
     }
 }
 logFiles.forEach(logFile => {
@@ -66,3 +67,7 @@ logFiles.forEach(logFile => {
     Ion.fs.copyFileSync(`logs/${logFile}`, archiveName);
     console.log(`Archived log: ${logFile}`);
 });
+
+// Cleanup created files and directories
+Ion.fs.removeSync('logs', { recursive: true });
+Ion.fs.removeSync('archive', { recursive: true });
