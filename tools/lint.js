@@ -9,11 +9,11 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-console.log('🔍 Ion Code Quality Checker\n');
+console.log('Ion Code Quality Checker\n');
 
 // Check if we're in the right directory
 if (!fs.existsSync('Cargo.toml')) {
-  console.error('❌ Error: Must be run from the Ion project root');
+  console.error('Error: Must be run from the Ion project root');
   process.exit(1);
 }
 
@@ -44,24 +44,24 @@ let passed = 0;
 let failed = 0;
 
 for (const check of checks) {
-  console.log(`📋 ${check.name}`);
+  console.log(`${check.name}`);
   console.log(`   ${check.description}`);
 
   try {
     execSync(check.command, { stdio: 'inherit' });
-    console.log('   ✅ Passed\n');
+    console.log('   Passed\n');
     passed++;
   } catch (error) {
-    console.log('   ❌ Failed\n');
+    console.log('   Failed\n');
     failed++;
   }
 }
 
-console.log(`📊 Results: ${passed} passed, ${failed} failed`);
+console.log(`Results: ${passed} passed, ${failed} failed`);
 
 if (failed > 0) {
-  console.log('❌ Some checks failed. Please fix the issues above.');
+  console.log('Some checks failed. Please fix the issues above.');
   process.exit(1);
 } else {
-  console.log('🎉 All checks passed!');
+  console.log('All checks passed!');
 }
