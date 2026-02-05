@@ -28,7 +28,7 @@ tempFiles.forEach(file => {
 });
 
 // Move processed files to completed directory
-const pendingFiles = Ion.fs.readDirSync('pending/');
+const pendingFiles = Ion.fs.readDirSync('pending/').map(f => typeof f === 'string' ? f : f.name || f.toString());
 pendingFiles.forEach(file => {
     Ion.fs.renameSync(`pending/${file}`, `completed/${file}`);
     console.log(`Processed: ${file}`);
@@ -41,9 +41,10 @@ Ion.fs.renameSync('report.txt', `report_${timestamp}.txt`);
 console.log('Added timestamp to report');
 
 // Organize files by type
-const documents = Ion.fs.readDirSync('.').filter(f =>
-    f.endsWith('.pdf') || f.endsWith('.doc') || f.endsWith('.txt')
-);
+const documents = Ion.fs.readDirSync('.').filter(f => {
+    const fileName = typeof f === 'string' ? f : f.name || f.toString();
+    return fileName.endsWith('.pdf') || fileName.endsWith('.doc') || fileName.endsWith('.txt');
+}).map(f => typeof f === 'string' ? f : f.name || f.toString());
 documents.forEach(doc => {
     Ion.fs.renameSync(doc, `documents/${doc}`);
     console.log(`Organized document: ${doc}`);
@@ -57,17 +58,24 @@ console.log('Reorganized config files');
 // Move log files to dated directories
 const logDate = new Date().toISOString().slice(0, 10);
 Ion.fs.mkdirSync(`logs/${logDate}`, { recursive: true });
-const logFiles = Ion.fs.readDirSync('logs/').filter(f => f.endsWith('.log'));
+const logFiles = Ion.fs.readDirSync('logs/').filter(f => {
+    const fileName = typeof f === 'string' ? f : f.name || f.toString();
+    return fileName.endsWith('.log');
+}).map(f => typeof f === 'string' ? f : f.name || f.toString());
 logFiles.forEach(logFile => {
     Ion.fs.renameSync(`logs/${logFile}`, `logs/${logDate}/${logFile}`);
     console.log(`Archived log: ${logFile}`);
 });
 
 // Rename uploaded files with proper names
-const uploads = Ion.fs.readDirSync('uploads/');
+const uploads = Ion.fs.readDirSync('uploads/').map(f => typeof f === 'string' ? f : f.name || f.toString());
 uploads.forEach((file, index) => {
     const ext = file.split('.').pop();
     const newName = `upload_${index + 1}.${ext}`;
     Ion.fs.renameSync(`uploads/${file}`, `uploads/${newName}`);
     console.log(`Renamed upload: ${file} -> ${newName}`);
 });
+
+// Cleanup created files
+Ion.fs.removeSync('final_file1.txt');
+Ion.fs.removeSync('final_file2.txt');
