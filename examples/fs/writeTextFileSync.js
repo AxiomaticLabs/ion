@@ -40,3 +40,11 @@ const existingContent = Ion.fs.readTextFileSync('log.txt');
 const newContent = existingContent + 'New log entry\n';
 Ion.fs.writeTextFileSync('log.txt', newContent);
 console.log('Appended to log.txt');
+
+// Cleanup created files
+Ion.fs.removeSync('hello.txt');
+Ion.fs.removeSync('config.json');
+Ion.fs.removeSync('app.log');
+Ion.fs.removeSync('index.html');
+Ion.fs.removeSync('data.csv');
+Ion.fs.removeSync('log.txt');
