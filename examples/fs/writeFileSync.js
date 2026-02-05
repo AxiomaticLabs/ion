@@ -48,3 +48,11 @@ modifiedData[0] = 0xFF;
 modifiedData[1] = 0xFE;
 Ion.fs.writeFileSync('modified.bin', modifiedData);
 console.log('Created modified.bin');
+
+// Cleanup created files
+Ion.fs.removeSync('binary.dat');
+Ion.fs.removeSync('random.png');
+Ion.fs.removeSync('compressed.dat');
+Ion.fs.removeSync('pattern.bin');
+Ion.fs.removeSync('structured.bin');
+Ion.fs.removeSync('modified.bin');
