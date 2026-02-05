@@ -23,8 +23,9 @@ const allFiles = Ion.fs.readDirSync('.');
 const jsFiles = [];
 for (let i = 0; i < allFiles.length; i++) {
     const file = allFiles[i];
-    if (file.indexOf('.js') === file.length - 3) {
-        jsFiles.push(file);
+    const fileName = typeof file === 'string' ? file : file.name || file.toString();
+    if (fileName.indexOf('.js') === fileName.length - 3) {
+        jsFiles.push(fileName);
     }
 }
 console.log('JavaScript files in current dir:');
@@ -79,3 +80,6 @@ console.log('Subdirectories:');
 directories.forEach(dir => {
     console.log(`  ${dir}/`);
 });
+
+// Cleanup created directory
+Ion.fs.removeSync('config', { recursive: true });
