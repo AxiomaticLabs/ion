@@ -1,18 +1,37 @@
 // Example: Renaming/moving files
 // This demonstrates how to rename files or move them to different locations
 
+// Create initial files
+Ion.fs.writeTextFileSync('examples/sandbox/old-name.txt', 'old content');
+Ion.fs.writeTextFileSync('examples/sandbox/file.txt', 'file content');
+Ion.fs.writeTextFileSync('examples/sandbox/temp_file1.txt', 'content1');
+Ion.fs.writeTextFileSync('examples/sandbox/temp_file2.txt', 'content2');
+Ion.fs.writeTextFileSync('examples/sandbox/report.txt', 'report content');
+Ion.fs.mkdirSync('examples/sandbox/pending', { recursive: true });
+Ion.fs.writeTextFileSync('examples/sandbox/pending/file1.txt', 'pending1');
+Ion.fs.writeTextFileSync('examples/sandbox/pending/file2.txt', 'pending2');
+Ion.fs.mkdirSync('examples/sandbox/uploads', { recursive: true });
+Ion.fs.writeTextFileSync('examples/sandbox/uploads/file1.jpg', 'jpg1');
+Ion.fs.writeTextFileSync('examples/sandbox/uploads/file2.png', 'png2');
+Ion.fs.mkdirSync('examples/sandbox/project', { recursive: true });
+Ion.fs.writeTextFileSync('examples/sandbox/project/file1.pdf', 'pdf1');
+Ion.fs.writeTextFileSync('examples/sandbox/project/file2.doc', 'doc2');
+Ion.fs.writeTextFileSync('examples/sandbox/project/file3.txt', 'txt3');
+Ion.fs.mkdirSync('examples/sandbox/logs', { recursive: true });
+Ion.fs.writeTextFileSync('examples/sandbox/logs/log1.log', 'log1');
+Ion.fs.writeTextFileSync('examples/sandbox/logs/log2.log', 'log2');
+
 // Rename a file
-Ion.fs.renameSync('old-name.txt', 'new-name.txt');
-console.log('Renamed file: old-name.txt -> new-name.txt');
+Ion.fs.renameSync('examples/sandbox/old-name.txt', 'examples/sandbox/new-name.txt');
+console.log('Renamed file: examples/sandbox/old-name.txt -> examples/sandbox/new-name.txt');
 
 // Move a file to a different directory
-Ion.fs.renameSync('file.txt', 'archive/file.txt');
+Ion.fs.mkdirSync('examples/sandbox/archive', { recursive: true });
+Ion.fs.renameSync('examples/sandbox/file.txt', 'examples/sandbox/archive/file.txt');
 console.log('Moved file to archive directory');
 
 // Rename multiple files with a pattern (manual implementation)
-Ion.fs.writeTextFileSync('temp_file1.txt', 'content1');
-Ion.fs.writeTextFileSync('temp_file2.txt', 'content2');
-const allFiles = Ion.fs.readDirSync('.');
+const allFiles = Ion.fs.readDirSync('examples/sandbox/');
 const tempFiles = [];
 for (let i = 0; i < allFiles.length; i++) {
     const f = allFiles[i];
@@ -23,59 +42,64 @@ for (let i = 0; i < allFiles.length; i++) {
 }
 tempFiles.forEach(file => {
     const newName = file.replace('temp_', 'final_');
-    Ion.fs.renameSync(file, newName);
+    Ion.fs.renameSync(`examples/sandbox/${file}`, `examples/sandbox/${newName}`);
     console.log(`Renamed: ${file} -> ${newName}`);
 });
 
 // Move processed files to completed directory
-const pendingFiles = Ion.fs.readDirSync('pending/').map(f => typeof f === 'string' ? f : f.name || f.toString());
+Ion.fs.mkdirSync('examples/sandbox/completed', { recursive: true });
+const pendingFiles = Ion.fs.readDirSync('examples/sandbox/pending/').map(f => typeof f === 'string' ? f : f.name || f.toString());
 pendingFiles.forEach(file => {
-    Ion.fs.renameSync(`pending/${file}`, `completed/${file}`);
+    Ion.fs.renameSync(`examples/sandbox/pending/${file}`, `examples/sandbox/completed/${file}`);
     console.log(`Processed: ${file}`);
 });
 
 // Rename files with timestamps
 const now = new Date();
 const timestamp = now.toISOString().slice(0, 19).replace(/[:.]/g, '-');
-Ion.fs.renameSync('report.txt', `report_${timestamp}.txt`);
+Ion.fs.renameSync('examples/sandbox/report.txt', `examples/sandbox/report_${timestamp}.txt`);
 console.log('Added timestamp to report');
 
 // Organize files by type
-const documents = Ion.fs.readDirSync('.').filter(f => {
+const documents = Ion.fs.readDirSync('examples/sandbox/project/').filter(f => {
     const fileName = typeof f === 'string' ? f : f.name || f.toString();
     return fileName.endsWith('.pdf') || fileName.endsWith('.doc') || fileName.endsWith('.txt');
 }).map(f => typeof f === 'string' ? f : f.name || f.toString());
+Ion.fs.mkdirSync('examples/sandbox/documents', { recursive: true });
 documents.forEach(doc => {
-    Ion.fs.renameSync(doc, `documents/${doc}`);
+    Ion.fs.renameSync(`examples/sandbox/project/${doc}`, `examples/sandbox/documents/${doc}`);
     console.log(`Organized document: ${doc}`);
 });
 
 // Rename config files for different environments
-Ion.fs.renameSync('config.dev.json', 'config/production.json');
-Ion.fs.renameSync('config.prod.json', 'config/staging.json');
+Ion.fs.mkdirSync('examples/sandbox/config', { recursive: true });
+Ion.fs.writeTextFileSync('examples/sandbox/config.dev.json', '{"dev": true}');
+Ion.fs.writeTextFileSync('examples/sandbox/config.prod.json', '{"prod": true}');
+Ion.fs.renameSync('examples/sandbox/config.dev.json', 'examples/sandbox/config/production.json');
+Ion.fs.renameSync('examples/sandbox/config.prod.json', 'examples/sandbox/config/staging.json');
 console.log('Reorganized config files');
 
 // Move log files to dated directories
 const logDate = new Date().toISOString().slice(0, 10);
-Ion.fs.mkdirSync(`logs/${logDate}`, { recursive: true });
-const logFiles = Ion.fs.readDirSync('logs/').filter(f => {
+Ion.fs.mkdirSync(`examples/sandbox/logs/${logDate}`, { recursive: true });
+const logFiles = Ion.fs.readDirSync('examples/sandbox/logs/').filter(f => {
     const fileName = typeof f === 'string' ? f : f.name || f.toString();
     return fileName.endsWith('.log');
 }).map(f => typeof f === 'string' ? f : f.name || f.toString());
 logFiles.forEach(logFile => {
-    Ion.fs.renameSync(`logs/${logFile}`, `logs/${logDate}/${logFile}`);
+    Ion.fs.renameSync(`examples/sandbox/logs/${logFile}`, `examples/sandbox/logs/${logDate}/${logFile}`);
     console.log(`Archived log: ${logFile}`);
 });
 
 // Rename uploaded files with proper names
-const uploads = Ion.fs.readDirSync('uploads/').map(f => typeof f === 'string' ? f : f.name || f.toString());
+Ion.fs.mkdirSync('examples/sandbox/uploads/renamed', { recursive: true });
+const uploads = Ion.fs.readDirSync('examples/sandbox/uploads/').map(f => typeof f === 'string' ? f : f.name || f.toString()).filter(f => f !== 'renamed');
 uploads.forEach((file, index) => {
     const ext = file.split('.').pop();
     const newName = `upload_${index + 1}.${ext}`;
-    Ion.fs.renameSync(`uploads/${file}`, `uploads/${newName}`);
+    Ion.fs.renameSync(`examples/sandbox/uploads/${file}`, `examples/sandbox/uploads/renamed/${newName}`);
     console.log(`Renamed upload: ${file} -> ${newName}`);
 });
 
 // Cleanup created files
-Ion.fs.removeSync('final_file1.txt');
-Ion.fs.removeSync('final_file2.txt');
+Ion.fs.removeSync('examples/sandbox', { recursive: true });

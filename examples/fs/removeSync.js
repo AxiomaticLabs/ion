@@ -2,16 +2,16 @@
 // This demonstrates how to delete files and directories
 
 // Remove a single file
-Ion.fs.writeTextFileSync('temp.txt', 'temporary content');
-Ion.fs.removeSync('temp.txt');
-console.log('Removed temp.txt');
+Ion.fs.writeTextFileSync('examples/sandbox/temp.txt', 'temporary content');
+Ion.fs.removeSync('examples/sandbox/temp.txt');
+console.log('Removed examples/sandbox/temp.txt');
 
 // Remove multiple temporary files
 const tempFiles = ['cache.dat', 'temp.log', 'scratch.txt'];
 tempFiles.forEach(file => {
     try {
-        Ion.fs.writeTextFileSync(file, 'temp');
-        Ion.fs.removeSync(file);
+        Ion.fs.writeTextFileSync(`examples/sandbox/${file}`, 'temp');
+        Ion.fs.removeSync(`examples/sandbox/${file}`);
         console.log(`Cleaned up: ${file}`);
     } catch (error) {
         console.log(`File not found: ${file}`);
@@ -19,14 +19,17 @@ tempFiles.forEach(file => {
 });
 
 // Remove a directory and its contents recursively
-Ion.fs.mkdirSync('temp-project/src', { recursive: true });
-Ion.fs.writeTextFileSync('temp-project/src/main.js', 'console.log("hello");');
-Ion.fs.writeTextFileSync('temp-project/README.md', '# Temp Project');
-Ion.fs.removeSync('temp-project', { recursive: true });
+Ion.fs.mkdirSync('examples/sandbox/temp-project/src', { recursive: true });
+Ion.fs.writeTextFileSync('examples/sandbox/temp-project/src/main.js', 'console.log("hello");');
+Ion.fs.writeTextFileSync('examples/sandbox/temp-project/README.md', '# Temp Project');
+Ion.fs.removeSync('examples/sandbox/temp-project', { recursive: true });
 console.log('Removed entire temp-project directory');
 
 // Clean up old log files (older than 7 days)
-const logDir = 'logs/';
+Ion.fs.mkdirSync('examples/sandbox/logs', { recursive: true });
+Ion.fs.writeTextFileSync('examples/sandbox/logs/old.log', 'old log');
+Ion.fs.writeTextFileSync('examples/sandbox/logs/new.log', 'new log');
+const logDir = 'examples/sandbox/logs/';
 const entries = Ion.fs.readDirSync(logDir);
 const sevenDaysAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
 
@@ -50,10 +53,10 @@ entries.forEach(entry => {
 const dirsToCheck = ['empty-dir1', 'empty-dir2'];
 dirsToCheck.forEach(dir => {
     try {
-        Ion.fs.mkdirSync(dir);
-        const contents = Ion.fs.readDirSync(dir);
+        Ion.fs.mkdirSync(`examples/sandbox/${dir}`);
+        const contents = Ion.fs.readDirSync(`examples/sandbox/${dir}`);
         if (contents.length === 0) {
-            Ion.fs.removeSync(dir);
+            Ion.fs.removeSync(`examples/sandbox/${dir}`);
             console.log(`Removed empty directory: ${dir}`);
         }
     } catch (error) {
@@ -62,8 +65,11 @@ dirsToCheck.forEach(dir => {
 });
 
 // Remove cache files
-const cacheDir = 'cache/';
+const cacheDir = 'examples/sandbox/cache/';
 try {
+    Ion.fs.mkdirSync(cacheDir, { recursive: true });
+    Ion.fs.writeTextFileSync(`${cacheDir}file1.cache`, 'cache1');
+    Ion.fs.writeTextFileSync(`${cacheDir}file2.cache`, 'cache2');
     const cacheFiles = Ion.fs.readDirSync(cacheDir);
     cacheFiles.forEach(file => {
         Ion.fs.removeSync(`${cacheDir}${file}`);
@@ -74,8 +80,11 @@ try {
 }
 
 // Remove temporary upload files after processing
-const uploadDir = 'temp-uploads/';
+const uploadDir = 'examples/sandbox/temp-uploads/';
 try {
+    Ion.fs.mkdirSync(uploadDir, { recursive: true });
+    Ion.fs.writeTextFileSync(`${uploadDir}upload1.tmp`, 'temp1');
+    Ion.fs.writeTextFileSync(`${uploadDir}upload2.tmp`, 'temp2');
     const uploads = Ion.fs.readDirSync(uploadDir);
     uploads.forEach(file => {
         // In real scenario, check if file was processed
@@ -91,9 +100,12 @@ const buildFiles = ['app.js.map', 'bundle.js.map', 'dist/'];
 buildFiles.forEach(item => {
     try {
         if (item.endsWith('/')) {
-            Ion.fs.removeSync(item.slice(0, -1), { recursive: true });
+            Ion.fs.mkdirSync(`examples/sandbox/${item.slice(0, -1)}`, { recursive: true });
+            Ion.fs.writeTextFileSync(`examples/sandbox/${item.slice(0, -1)}/dummy`, 'dummy');
+            Ion.fs.removeSync(`examples/sandbox/${item.slice(0, -1)}`, { recursive: true });
         } else {
-            Ion.fs.removeSync(item);
+            Ion.fs.writeTextFileSync(`examples/sandbox/${item}`, 'artifact');
+            Ion.fs.removeSync(`examples/sandbox/${item}`);
         }
         console.log(`Removed build artifact: ${item}`);
     } catch (error) {
@@ -102,6 +114,10 @@ buildFiles.forEach(item => {
 });
 
 // Cleanup any remaining created directories
-try { Ion.fs.removeSync('cache', { recursive: true }); } catch {}
-try { Ion.fs.removeSync('temp-uploads', { recursive: true }); } catch {}
-try { Ion.fs.removeSync('dist', { recursive: true }); } catch {}
+try { Ion.fs.removeSync('examples/sandbox/cache', { recursive: true }); } catch {}
+try { Ion.fs.removeSync('examples/sandbox/temp-uploads', { recursive: true }); } catch {}
+try { Ion.fs.removeSync('examples/sandbox/dist', { recursive: true }); } catch {}
+try { Ion.fs.removeSync('examples/sandbox/logs', { recursive: true }); } catch {}
+
+// Final cleanup
+Ion.fs.removeSync('examples/sandbox', { recursive: true });

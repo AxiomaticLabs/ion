@@ -9,17 +9,17 @@ entries.forEach(entry => {
 });
 
 // List files in a specific directory (create it first)
-Ion.fs.mkdirSync('config', { recursive: true });
-Ion.fs.writeTextFileSync('config/app.json', '{"name": "test"}');
-Ion.fs.writeTextFileSync('config/settings.json', '{"debug": true}');
-const configFiles = Ion.fs.readDirSync('config/');
+Ion.fs.mkdirSync('examples/sandbox/config', { recursive: true });
+Ion.fs.writeTextFileSync('examples/sandbox/config/app.json', '{"name": "test"}');
+Ion.fs.writeTextFileSync('examples/sandbox/config/settings.json', '{"debug": true}');
+const configFiles = Ion.fs.readDirSync('examples/sandbox/config/');
 console.log('Config files:');
 configFiles.forEach(file => {
     console.log(`  ${file}`);
 });
 
 // Filter for specific file types (manual implementation)
-const allFiles = Ion.fs.readDirSync('.');
+const allFiles = Ion.fs.readDirSync('examples/sandbox/');
 const jsFiles = [];
 for (let i = 0; i < allFiles.length; i++) {
     const file = allFiles[i];
@@ -28,16 +28,17 @@ for (let i = 0; i < allFiles.length; i++) {
         jsFiles.push(fileName);
     }
 }
-console.log('JavaScript files in current dir:');
+console.log('JavaScript files in sandbox:');
 jsFiles.forEach(file => {
     console.log(`  ${file}`);
 });
 
 // Count files by extension
-const files = Ion.fs.readDirSync('.');
+const files = Ion.fs.readDirSync('examples/sandbox/');
 const extensionCount = {};
 files.forEach(file => {
-    const parts = file.split('.');
+    const fileName = typeof file === 'string' ? file : file.name || file.toString();
+    const parts = fileName.split('.');
     const ext = parts[parts.length - 1];
     if (!extensionCount[ext]) {
         extensionCount[ext] = 0;
@@ -50,15 +51,19 @@ for (const ext in extensionCount) {
 }
 
 // Find the largest file in a directory
-const dirFiles = Ion.fs.readDirSync('data/');
+Ion.fs.mkdirSync('examples/sandbox/data', { recursive: true });
+Ion.fs.writeTextFileSync('examples/sandbox/data/file1.txt', 'small');
+Ion.fs.writeTextFileSync('examples/sandbox/data/file2.txt', 'larger content here');
+const dirFiles = Ion.fs.readDirSync('examples/sandbox/data/');
 let largestFile = null;
 let largestSize = 0;
 dirFiles.forEach(file => {
     try {
-        const size = Ion.fs.fileSize(`data/${file}`);
+        const fileName = typeof file === 'string' ? file : file.name || file.toString();
+        const size = Ion.fs.fileSize(`examples/sandbox/data/${fileName}`);
         if (size > largestSize) {
             largestSize = size;
-            largestFile = file;
+            largestFile = fileName;
         }
     } catch (e) {
         // Skip directories or inaccessible files
@@ -67,10 +72,14 @@ dirFiles.forEach(file => {
 console.log(`Largest file: ${largestFile} (${largestSize} bytes)`);
 
 // List subdirectories
-const allEntries = Ion.fs.readDirSync('project/');
+Ion.fs.mkdirSync('examples/sandbox/project/src', { recursive: true });
+Ion.fs.writeTextFileSync('examples/sandbox/project/src/main.js', 'console.log("main");');
+Ion.fs.writeTextFileSync('examples/sandbox/project/README.md', '# Project');
+const allEntries = Ion.fs.readDirSync('examples/sandbox/project/');
 const directories = allEntries.filter(entry => {
     try {
-        Ion.fs.readDirSync(`project/${entry}`);
+        const entryName = typeof entry === 'string' ? entry : entry.name || entry.toString();
+        Ion.fs.readDirSync(`examples/sandbox/project/${entryName}`);
         return true; // It's a directory if readDirSync doesn't throw
     } catch (e) {
         return false; // It's a file if readDirSync throws
@@ -78,8 +87,9 @@ const directories = allEntries.filter(entry => {
 });
 console.log('Subdirectories:');
 directories.forEach(dir => {
-    console.log(`  ${dir}/`);
+    const dirName = typeof dir === 'string' ? dir : dir.name || dir.toString();
+    console.log(`  ${dirName}/`);
 });
 
 // Cleanup created directory
-Ion.fs.removeSync('config', { recursive: true });
+Ion.fs.removeSync('examples/sandbox', { recursive: true });
