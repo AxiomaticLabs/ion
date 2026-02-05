@@ -30,3 +30,8 @@ console.log('Archive size:', readZipData.length, 'bytes');
 // Read a video file for processing
 const videoData = Ion.fs.readFileSync('video.mp4');
 console.log('Video size:', videoData.length, 'bytes');
+
+// Cleanup created files
+Ion.fs.removeSync('data.bin');
+Ion.fs.removeSync('photo.jpg');
+Ion.fs.removeSync('archive.zip');
