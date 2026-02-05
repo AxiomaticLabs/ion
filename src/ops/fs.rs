@@ -70,33 +70,31 @@ pub fn op_fs_read_dir(#[string] path: String) -> (Vec<String>, Vec<u32>) {
     let mut types = Vec::new();
 
     if let Ok(entries) = fs::read_dir(path) {
-        for entry in entries {
-            if let Ok(entry) = entry {
-                if let Some(name) = entry.file_name().to_str() {
-                    // Skip "." and ".." entries
-                    if name == "." || name == ".." {
-                        continue;
-                    }
-
-                    names.push(name.to_string());
-
-                    // Determine file type
-                    let file_type = match entry.file_type() {
-                        Ok(ft) => {
-                            if ft.is_file() {
-                                1 // Regular file
-                            } else if ft.is_dir() {
-                                2 // Directory
-                            } else if ft.is_symlink() {
-                                3 // Symlink
-                            } else {
-                                0 // Unknown
-                            }
-                        }
-                        Err(_) => 0, // Unknown on error
-                    };
-                    types.push(file_type);
+        for entry in entries.flatten() {
+            if let Some(name) = entry.file_name().to_str() {
+                // Skip "." and ".." entries
+                if name == "." || name == ".." {
+                    continue;
                 }
+
+                names.push(name.to_string());
+
+                // Determine file type
+                let file_type = match entry.file_type() {
+                    Ok(ft) => {
+                        if ft.is_file() {
+                            1 // Regular file
+                        } else if ft.is_dir() {
+                            2 // Directory
+                        } else if ft.is_symlink() {
+                            3 // Symlink
+                        } else {
+                            0 // Unknown
+                        }
+                    }
+                    Err(_) => 0, // Unknown on error
+                };
+                types.push(file_type);
             }
         }
     }
