@@ -1,6 +1,9 @@
 // Example: Reading into a pre-allocated buffer
 // This demonstrates efficient reading when you know the buffer size ahead of time
 
+// Ensure sandbox directory exists
+Ion.fs.mkdirSync('examples/sandbox', { recursive: true });
+
 // Create and read a file of known size into a pre-allocated buffer
 const testData = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 Ion.fs.writeFileSync('examples/sandbox/data.bin', testData);
@@ -30,11 +33,18 @@ console.log('Actual data size:', chunkBuffer.length, 'bytes');
 console.log('Actual data length:', chunkBuffer.length);
 
 // Read a configuration block
-const configSize = 256;
+const configData = 'key1=value1\nkey2=value2\nkey3=value3\n';
+Ion.fs.writeTextFileSync('examples/sandbox/config.dat', configData);
+const configSize = Ion.fs.fileSize('examples/sandbox/config.dat');
 const configBuffer = new Uint8Array(configSize);
 Ion.fs.readInto('examples/sandbox/config.dat', configBuffer);
-const configText = new TextDecoder().decode(configBuffer);
-console.log('Config:', configText.trim());
+// const configText = new TextDecoder().decode(configBuffer);
+// console.log('Config:', configText.trim());
+console.log('Config buffer length:', configBuffer.length, 'bytes');
 
 // Cleanup created files
-Ion.fs.removeSync('examples/sandbox', { recursive: true });
+try {
+    Ion.fs.removeSync('examples/sandbox', { recursive: true });
+} catch (error) {
+    // Ignore cleanup errors
+}

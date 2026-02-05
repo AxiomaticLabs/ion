@@ -1,6 +1,9 @@
 // Example: Truncating files
 // This demonstrates how to change file sizes (shrink or extend)
 
+// Ensure sandbox directory exists
+Ion.fs.mkdirSync('examples/sandbox', { recursive: true });
+
 // Truncate a file to a specific size
 Ion.fs.writeTextFileSync('examples/sandbox/large-file.txt', 'This is a long text that will be truncated to keep only the first part.');
 Ion.fs.truncateSync('examples/sandbox/large-file.txt', 20); // Keep only first 20 bytes

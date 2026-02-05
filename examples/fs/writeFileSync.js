@@ -1,6 +1,9 @@
 // Example: Writing binary files
 // This demonstrates how to write raw binary data to files
 
+// Ensure sandbox directory exists
+Ion.fs.mkdirSync('examples/sandbox', { recursive: true });
+
 // Write binary data from a Uint8Array
 const binaryData = new Uint8Array([72, 101, 108, 108, 111]); // "Hello" in ASCII
 Ion.fs.writeFileSync('examples/sandbox/binary.dat', binaryData);

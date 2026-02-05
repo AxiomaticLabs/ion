@@ -1,6 +1,9 @@
 // Example: Removing files and directories
 // This demonstrates how to delete files and directories
 
+// Ensure sandbox directory exists
+Ion.fs.mkdirSync('examples/sandbox', { recursive: true });
+
 // Remove a single file
 Ion.fs.writeTextFileSync('examples/sandbox/temp.txt', 'temporary content');
 Ion.fs.removeSync('examples/sandbox/temp.txt');
@@ -120,4 +123,8 @@ try { Ion.fs.removeSync('examples/sandbox/dist', { recursive: true }); } catch {
 try { Ion.fs.removeSync('examples/sandbox/logs', { recursive: true }); } catch {}
 
 // Final cleanup
-Ion.fs.removeSync('examples/sandbox', { recursive: true });
+try {
+    Ion.fs.removeSync('examples/sandbox', { recursive: true });
+} catch (error) {
+    // Ignore cleanup errors
+}

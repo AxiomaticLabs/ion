@@ -1,6 +1,9 @@
 // Example: Renaming/moving files
 // This demonstrates how to rename files or move them to different locations
 
+// Ensure sandbox directory exists
+Ion.fs.mkdirSync('examples/sandbox', { recursive: true });
+
 // Create initial files
 Ion.fs.writeTextFileSync('examples/sandbox/old-name.txt', 'old content');
 Ion.fs.writeTextFileSync('examples/sandbox/file.txt', 'file content');
@@ -102,4 +105,8 @@ uploads.forEach((file, index) => {
 });
 
 // Cleanup created files
-Ion.fs.removeSync('examples/sandbox', { recursive: true });
+try {
+    Ion.fs.removeSync('examples/sandbox', { recursive: true });
+} catch (error) {
+    // Ignore cleanup errors
+}

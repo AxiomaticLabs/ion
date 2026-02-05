@@ -1,6 +1,9 @@
 // Example: Copying files
 // This demonstrates how to copy files from one location to another
 
+// Ensure sandbox directory exists
+Ion.fs.mkdirSync('examples/sandbox', { recursive: true });
+
 // Create source files first
 Ion.fs.writeTextFileSync('examples/sandbox/config.json', '{"name": "App"}');
 Ion.fs.writeTextFileSync('examples/sandbox/document.pdf', 'PDF content');
@@ -8,6 +11,7 @@ Ion.fs.writeTextFileSync('examples/sandbox/app.js', 'console.log("app");');
 Ion.fs.writeTextFileSync('examples/sandbox/package.json', '{"version": "1.0"}');
 Ion.fs.writeTextFileSync('examples/sandbox/README.md', '# README');
 Ion.fs.writeTextFileSync('examples/sandbox/report.txt', 'Report content');
+Ion.fs.mkdirSync('examples/sandbox/temp', { recursive: true });
 Ion.fs.writeTextFileSync('examples/sandbox/temp/upload_12345.jpg', 'image data');
 
 // Copy a configuration file
@@ -89,4 +93,13 @@ logFiles.forEach(logFile => {
 });
 
 // Cleanup created files and directories
-Ion.fs.removeSync('examples/sandbox', { recursive: true });
+try {
+    Ion.fs.removeSync('examples/sandbox', { recursive: true });
+    console.log('Cleanup completed successfully');
+} catch (error) {
+    console.log('Cleanup error:', error);
+    // Ignore cleanup errors
+}
+
+// Ensure script ends cleanly
+console.log('Script completed');

@@ -1,6 +1,9 @@
 // Example: Writing text files
 // This demonstrates how to write text content to files
 
+// Ensure sandbox directory exists
+Ion.fs.mkdirSync('examples/sandbox', { recursive: true });
+
 // Write a simple text file
 Ion.fs.writeTextFileSync('examples/sandbox/hello.txt', 'Hello, World!');
 console.log('Created examples/sandbox/hello.txt');

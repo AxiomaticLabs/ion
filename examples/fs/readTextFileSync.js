@@ -1,6 +1,9 @@
 // Example: Reading a text file
 // This demonstrates how to read the entire contents of a text file as a UTF-8 string
 
+// Ensure sandbox directory exists
+Ion.fs.mkdirSync('examples/sandbox', { recursive: true });
+
 // Create and read a configuration file
 Ion.fs.writeTextFileSync('examples/sandbox/config.json', '{"name": "MyApp", "version": "1.0.0"}');
 const configContent = Ion.fs.readTextFileSync('examples/sandbox/config.json');
