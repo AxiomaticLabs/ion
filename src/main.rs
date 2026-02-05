@@ -1,47 +1,34 @@
-use deno_core::JsRuntime;
-use deno_core::RuntimeOptions;
+// Ion JavaScript Runtime
+// A fast JavaScript runtime built on Deno Core with our own file system ops
+
 use deno_core::error::AnyError;
-use deno_core::op2;
-use std::io::Read;
-use std::fs::File;
+use ion::IonRuntime;
+use std::env;
 
-#[op2(fast)]
-fn op_ion_print(#[string] msg: String) {
-    println!("[Ion]: {}", msg);
-}
-
-#[op2(fast)]
-fn op_ion_file_size(#[string] path: String) -> u32 {
-    std::fs::metadata(path).unwrap().len() as u32
-}
-
-#[op2(fast)]
-fn op_ion_read_into(#[string] path: String, #[buffer] buf: &mut [u8]) {
-    let mut file = File::open(path).unwrap();
-    file.read_exact(buf).unwrap();
-}
-
-deno_core::extension!(ion, ops = [op_ion_print, op_ion_file_size, op_ion_read_into],);
-
+/// Main entry point - takes a JS file and runs it
+/// Simple command line interface: just pass the path to your JS file
 #[tokio::main]
 async fn main() -> Result<(), AnyError> {
-    let args: Vec<String> = std::env::args().collect();
+    // Get the command line args
+    let args: Vec<String> = env::args().collect();
+
+    // Need at least one argument (the JS file to run)
     if args.len() < 2 {
         eprintln!("Usage: {} <js_file>", args[0]);
         std::process::exit(1);
     }
+
+    // The JS file path is the first argument
     let js_file = args[1].clone();
 
-    let mut js_runtime = JsRuntime::new(RuntimeOptions {
-        extensions: vec![ion::init()],
-        ..Default::default()
-    });
+    // Create our runtime with all the extensions loaded
+    let mut ion_runtime = IonRuntime::new();
 
+    // Read the JavaScript code from the file
     let js_code = std::fs::read_to_string(&js_file)?;
 
-    let _mod_id = js_runtime.execute_script(js_file, js_code)?;
-
-    js_runtime.run_event_loop(Default::default()).await?;
+    // Run it and wait for everything to finish
+    ion_runtime.execute(js_file.clone(), js_code).await?;
 
     Ok(())
 }
