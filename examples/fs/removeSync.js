@@ -100,3 +100,8 @@ buildFiles.forEach(item => {
         console.log(`Build artifact not found: ${item}`);
     }
 });
+
+// Cleanup any remaining created directories
+try { Ion.fs.removeSync('cache', { recursive: true }); } catch {}
+try { Ion.fs.removeSync('temp-uploads', { recursive: true }); } catch {}
+try { Ion.fs.removeSync('dist', { recursive: true }); } catch {}
