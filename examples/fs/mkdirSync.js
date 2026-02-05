@@ -47,3 +47,13 @@ console.log(`Created backup directory: backups/${timestamp}/`);
     Ion.fs.mkdirSync(`logs/${env}`, { recursive: true });
 });
 console.log('Created environment-specific directories');
+
+// Cleanup created directories
+Ion.fs.removeSync('temp', { recursive: true });
+Ion.fs.removeSync('project', { recursive: true });
+Ion.fs.removeSync('my-app', { recursive: true });
+Ion.fs.removeSync('temp-processing', { recursive: true });
+Ion.fs.removeSync('users', { recursive: true });
+Ion.fs.removeSync('backups', { recursive: true });
+Ion.fs.removeSync('config', { recursive: true });
+Ion.fs.removeSync('logs', { recursive: true });
