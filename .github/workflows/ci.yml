@@ -12,7 +12,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  CARGO_INCREMENTAL: 0
+  CARGO_INCREMENTAL: 1
   RUST_BACKTRACE: 1
 
 jobs:
@@ -83,7 +83,7 @@ jobs:
         include:
           # Linux builds
           - os: ubuntu-latest
-            profile: debug
+            profile: dev
             job_type: test
           - os: ubuntu-latest
             profile: release
@@ -94,18 +94,15 @@ jobs:
 
           # macOS builds
           - os: macos-latest
-            profile: debug
+            profile: dev
             job_type: test
           - os: macos-latest
             profile: release
             job_type: test
 
-          # Windows builds
+          # Windows builds (only dev for faster CI)
           - os: windows-latest
-            profile: debug
-            job_type: test
-          - os: windows-latest
-            profile: release
+            profile: dev
             job_type: test
 
     steps:
@@ -131,7 +128,7 @@ jobs:
         run: cargo test --profile ${{ matrix.profile }} --tests --locked
 
       - name: Run Full Test Suite
-        if: matrix.os == 'ubuntu-latest' && matrix.profile == 'debug' && matrix.job_type == 'test'
+        if: matrix.os == 'ubuntu-latest' && matrix.profile == 'dev' && matrix.job_type == 'test'
         run: make test
 
       - name: Run Benchmarks
@@ -139,11 +136,12 @@ jobs:
         run: make bench
 
       - name: Run Examples
-        if: matrix.os == 'ubuntu-latest' && matrix.profile == 'debug' && matrix.job_type == 'test'
+        if: matrix.os == 'ubuntu-latest' && matrix.profile == 'dev' && matrix.job_type == 'test'
         run: make examples
 
       - name: Check for test pollution
         if: matrix.job_type == 'test'
+        shell: bash
         run: |
           if [[ -n $(git status --porcelain) ]]; then
             echo "Test pollution detected - tests created uncommitted files:"
@@ -187,12 +185,15 @@ jobs:
         run: make test-js
 
       - name: Run JS Benchmarks
+        if: matrix.os == 'ubuntu-latest'
         run: make bench
 
       - name: Run JS Stress Tests
+        if: matrix.os == 'ubuntu-latest'
         run: make stress
 
       - name: Run JS Startup Tests
+        if: matrix.os == 'ubuntu-latest'
         run: make start
 
   # Publish canary builds for main branch

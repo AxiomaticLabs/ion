@@ -60,75 +60,43 @@ fn op_fs_read_into(#[string] path: String, #[buffer] buf: &mut [u8]) -> Result<(
 // Directory operations - these are trickier because we want maximum speed
 // We skip the Rust std::fs overhead and call libc directly
 
-/// List files in a directory using raw system calls for speed
+/// List files in a directory using cross-platform Rust std::fs
 /// Returns two arrays: one with filenames, one with file types
 /// Types: 0=unknown, 1=regular file, 2=directory, 3=symlink
-///
-/// We use opendir/readdir/closedir directly to avoid any extra overhead
-/// and filter out the "." and ".." entries automatically
 #[op2]
 #[serde]
 pub fn op_fs_read_dir(#[string] path: String) -> (Vec<String>, Vec<u32>) {
-    // Pre-allocate some space to avoid resizing as we go
-    let mut names = Vec::with_capacity(64);
-    let mut types = Vec::with_capacity(64);
+    let mut names = Vec::new();
+    let mut types = Vec::new();
 
-    unsafe {
-        use libc::{closedir, opendir, readdir};
-        use std::ffi::CString;
+    if let Ok(entries) = fs::read_dir(path) {
+        for entry in entries.flatten() {
+            if let Some(name) = entry.file_name().to_str() {
+                // Skip "." and ".." entries
+                if name == "." || name == ".." {
+                    continue;
+                }
 
-        // Convert the path to a C string for libc
-        const DT_REG_U32: u32 = libc::DT_REG as u32;
-        const DT_DIR_U32: u32 = libc::DT_DIR as u32;
-        const DT_LNK_U32: u32 = libc::DT_LNK as u32;
+                names.push(name.to_string());
 
-        let c_path = match CString::new(path) {
-            Ok(s) => s,
-            Err(_) => return (names, types), // Path had invalid UTF-8
-        };
-
-        // Open the directory
-        let dir = opendir(c_path.as_ptr());
-        if dir.is_null() {
-            return (names, types); // Couldn't open directory
-        }
-
-        // Read through all the entries
-        loop {
-            let entry = readdir(dir);
-            if entry.is_null() {
-                break; // No more entries
-            }
-
-            let d_name = (*entry).d_name.as_ptr();
-            let name_len = libc::strlen(d_name);
-            if name_len == 0 {
-                continue; // Skip empty names
-            }
-
-            // Skip "." and ".." - nobody wants those
-            if *d_name == b'.' as i8
-                && (name_len == 1 || (name_len == 2 && *d_name.offset(1) == b'.' as i8))
-            {
-                continue;
-            }
-
-            // Convert the C string to a Rust string
-            let name_bytes = std::slice::from_raw_parts(d_name as *const u8, name_len);
-            let name = String::from_utf8_lossy(name_bytes).to_string();
-            names.push(name);
-
-            // Figure out what type of file this is
-            let d_type = (*entry).d_type as u32;
-            match d_type {
-                DT_REG_U32 => types.push(1), // Regular file
-                DT_DIR_U32 => types.push(2), // Directory
-                DT_LNK_U32 => types.push(3), // Symlink
-                _ => types.push(0),          // Something else
+                // Determine file type
+                let file_type = match entry.file_type() {
+                    Ok(ft) => {
+                        if ft.is_file() {
+                            1 // Regular file
+                        } else if ft.is_dir() {
+                            2 // Directory
+                        } else if ft.is_symlink() {
+                            3 // Symlink
+                        } else {
+                            0 // Unknown
+                        }
+                    }
+                    Err(_) => 0, // Unknown on error
+                };
+                types.push(file_type);
             }
         }
-
-        closedir(dir); // Clean up
     }
 
     (names, types)

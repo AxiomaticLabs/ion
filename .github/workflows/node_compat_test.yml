@@ -28,6 +28,7 @@ jobs:
         run: cargo build --release --locked
 
       - name: Test Node.js Compatibility
+        shell: bash
         run: |
           # Test basic Node.js-like APIs that Ion might support
           echo 'console.log("Testing Node.js-like APIs...");' | ./target/release/ion
