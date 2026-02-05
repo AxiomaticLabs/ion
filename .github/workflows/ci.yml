@@ -83,7 +83,7 @@ jobs:
         include:
           # Linux builds
           - os: ubuntu-latest
-            profile: debug
+            profile: dev
             job_type: test
           - os: ubuntu-latest
             profile: release
@@ -94,7 +94,7 @@ jobs:
 
           # macOS builds
           - os: macos-latest
-            profile: debug
+            profile: dev
             job_type: test
           - os: macos-latest
             profile: release
@@ -102,7 +102,7 @@ jobs:
 
           # Windows builds
           - os: windows-latest
-            profile: debug
+            profile: dev
             job_type: test
           - os: windows-latest
             profile: release
@@ -131,7 +131,7 @@ jobs:
         run: cargo test --profile ${{ matrix.profile }} --tests --locked
 
       - name: Run Full Test Suite
-        if: matrix.os == 'ubuntu-latest' && matrix.profile == 'debug' && matrix.job_type == 'test'
+        if: matrix.os == 'ubuntu-latest' && matrix.profile == 'dev' && matrix.job_type == 'test'
         run: make test
 
       - name: Run Benchmarks
@@ -139,7 +139,7 @@ jobs:
         run: make bench
 
       - name: Run Examples
-        if: matrix.os == 'ubuntu-latest' && matrix.profile == 'debug' && matrix.job_type == 'test'
+        if: matrix.os == 'ubuntu-latest' && matrix.profile == 'dev' && matrix.job_type == 'test'
         run: make examples
 
       - name: Check for test pollution
