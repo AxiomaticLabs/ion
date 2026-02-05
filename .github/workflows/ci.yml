@@ -100,12 +100,9 @@ jobs:
             profile: release
             job_type: test
 
-          # Windows builds
+          # Windows builds (only dev for faster CI)
           - os: windows-latest
             profile: dev
-            job_type: test
-          - os: windows-latest
-            profile: release
             job_type: test
 
     steps:
