@@ -69,10 +69,13 @@ git clone [https://github.com/your-username/ion.git](https://github.com/your-use
 cd ion
 
 # Build in release mode (Required for benchmarks)
-cargo build --release
+make build
+
+# Or build in dev mode
+make build-dev
 
 # Run a script
-./target/release/ion ./tests/ion.js
+./ion ./tests/ion.js
 ```
 
 ### Running Tests
@@ -86,12 +89,26 @@ mkfile -n 1g ./large-file.txt
 
 2. Run the comparison scripts:
 
-```
+```zsh
 # Node
 node ./tests/node.js
 
 # Ion
-./target/release/ion ./tests/ion.js
+./ion ./tests/ion.js
+```
+
+3. Run automated tests:
+
+```zsh
+# Run all Rust tests
+make test-rs
+
+# Run all JavaScript tests
+make test-js
+
+# Run tests in verbose mode
+make test-js V=1
+make test-rs V=1
 ```
 
 Created by Amol

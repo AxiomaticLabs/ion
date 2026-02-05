@@ -720,6 +720,7 @@ name = "ion"
 version = "0.1.0"
 dependencies = [
  "deno_core",
+ "libc",
  "tokio",
 ]
 
