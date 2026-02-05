@@ -185,12 +185,15 @@ jobs:
         run: make test-js
 
       - name: Run JS Benchmarks
+        if: matrix.os == 'ubuntu-latest'
         run: make bench
 
       - name: Run JS Stress Tests
+        if: matrix.os == 'ubuntu-latest'
         run: make stress
 
       - name: Run JS Startup Tests
+        if: matrix.os == 'ubuntu-latest'
         run: make start
 
   # Publish canary builds for main branch
