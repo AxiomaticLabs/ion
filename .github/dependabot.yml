@@ -1,0 +1,11 @@
+version: 2
+updates:
+  - package-ecosystem: "cargo"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    # Group updates together to avoid spamming your PR list
+    groups:
+      dependencies:
+        patterns:
+          - "*"
