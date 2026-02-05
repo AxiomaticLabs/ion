@@ -40,6 +40,7 @@ jobs:
           echo 'console.log(Ion.fs.readTextFileSync("test.txt"));' | ./target/release/ion
 
       - name: Generate Test Report
+        shell: bash
         run: |
           echo "## Ecosystem Compatibility Test Results" > test-report.md
           echo "- **Date**: $(date)" >> test-report.md

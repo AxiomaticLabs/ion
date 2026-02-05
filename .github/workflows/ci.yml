@@ -144,6 +144,7 @@ jobs:
 
       - name: Check for test pollution
         if: matrix.job_type == 'test'
+        shell: bash
         run: |
           if [[ -n $(git status --porcelain) ]]; then
             echo "Test pollution detected - tests created uncommitted files:"
