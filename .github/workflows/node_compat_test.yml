@@ -1,0 +1,63 @@
+name: Node.js Compatibility Tests
+
+on:
+  schedule:
+    # Run daily at 10:00 UTC
+    - cron: '0 10 * * *'
+  workflow_dispatch:
+
+jobs:
+  node-compat-test:
+    name: Node.js Compatibility (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Cargo
+        uses: swatinem/rust-cache@v2
+
+      - name: Build Ion
+        run: cargo build --release --locked
+
+      - name: Test Node.js Compatibility
+        run: |
+          # Test basic Node.js-like APIs that Ion might support
+          echo 'console.log("Testing Node.js-like APIs...");' | ./target/release/ion
+
+          # Test file system operations (Node.js style)
+          cat << 'EOF' | ./target/release/ion
+          const fs = Ion.fs;
+          // Test synchronous file operations
+          fs.writeFileSync('node_test.txt', 'Hello Node.js style!');
+          const content = fs.readFileSync('node_test.txt', 'utf8');
+          console.log('File content:', content);
+
+          // Test directory operations
+          fs.mkdirSync('node_test_dir');
+          const files = fs.readdirSync('.');
+          console.log('Files in directory:', files.length);
+
+          console.log('Node.js compatibility tests passed');
+EOF
+
+      - name: Generate Compatibility Report
+        run: |
+          echo "## Node.js Compatibility Test Results" > node-compat-report.md
+          echo "- **Date**: $(date)" >> node-compat-report.md
+          echo "- **OS**: ${{ matrix.os }}" >> node-compat-report.md
+          echo "- **Status**: Passed" >> node-compat-report.md
+          echo "- **Tests**: Basic file operations, directory operations" >> node-compat-report.md
+
+      - name: Upload Compatibility Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: node-compat-report-${{ matrix.os }}
+          path: node-compat-report.md

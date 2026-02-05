@@ -35,7 +35,10 @@ fn op_fs_read_file(#[string] path: String) -> Result<Vec<u8>, io::Error> {
 /// Write text to a file
 /// Will create the file if it doesn't exist, overwrite if it does
 #[op2(fast)]
-fn op_fs_write_text_file(#[string] path: String, #[string] content: String) -> Result<(), io::Error> {
+fn op_fs_write_text_file(
+    #[string] path: String,
+    #[string] content: String,
+) -> Result<(), io::Error> {
     fs::write(path, content)
 }
 

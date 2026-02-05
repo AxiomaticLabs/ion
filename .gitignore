@@ -4,6 +4,21 @@ target/
 
 # Test artifacts
 *.txt
+*.bin
+*.dat
+*.jpg
+*.png
+*.zip
+*.json
+*.html
+*.csv
+*.log
+config/
+logs/
+temp-*/
+cache/
+archives/
+versions/
 
 # OS generated files
 .DS_Store

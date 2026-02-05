@@ -11,12 +11,43 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  CARGO_INCREMENTAL: 0
+  RUST_BACKTRACE: 1
+
 jobs:
+  # Pre-build check to skip CI for draft PRs unless explicitly requested
+  pre_build:
+    name: Pre-build
+    runs-on: ubuntu-latest
+    outputs:
+      should_skip: ${{ steps.skip_check.outputs.should_skip }}
+    steps:
+      - id: skip_check
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" && "${{ github.event.pull_request.draft }}" == "true" ]]; then
+            if [[ "${{ github.event.head_commit.message }}" == *"[ci]"* ]] || \
+               [[ "${{ contains(github.event.pull_request.labels.*.name, 'ci-draft') }}" == "true" ]]; then
+              echo "should_skip=false" >> $GITHUB_OUTPUT
+              echo "Running CI for draft PR (explicitly requested)"
+            else
+              echo "should_skip=true" >> $GITHUB_OUTPUT
+              echo "Skipping CI for draft PR"
+            fi
+          else
+            echo "should_skip=false" >> $GITHUB_OUTPUT
+          fi
+
+  # Code quality checks
   quality:
     name: Code Quality
     runs-on: ubuntu-latest
+    needs: pre_build
+    if: needs.pre_build.outputs.should_skip != 'true'
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
@@ -30,19 +61,57 @@ jobs:
         run: cargo fmt --all -- --check
 
       - name: Lint with Clippy
-        run: cargo clippy -- -D warnings
+        run: cargo clippy --all-targets --all-features -- -D warnings
 
-  test:
-    name: Test (${{ matrix.os }})
-    needs: quality
+      - name: Check for uncommitted changes
+        run: |
+          if [[ -n $(git status --porcelain) ]]; then
+            echo "Uncommitted changes detected:"
+            git status --porcelain
+            exit 1
+          fi
+
+  # Comprehensive build and test matrix
+  build:
+    name: Build & Test (${{ matrix.os }}, ${{ matrix.profile }}, ${{ matrix.job_type }})
+    needs: [pre_build, quality]
+    if: needs.pre_build.outputs.should_skip != 'true'
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        include:
+          # Linux builds
+          - os: ubuntu-latest
+            profile: debug
+            job_type: test
+          - os: ubuntu-latest
+            profile: release
+            job_type: test
+          - os: ubuntu-latest
+            profile: release
+            job_type: bench
+
+          # macOS builds
+          - os: macos-latest
+            profile: debug
+            job_type: test
+          - os: macos-latest
+            profile: release
+            job_type: test
+
+          # Windows builds
+          - os: windows-latest
+            profile: debug
+            job_type: test
+          - os: windows-latest
+            profile: release
+            job_type: test
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
@@ -50,8 +119,113 @@ jobs:
       - name: Cache Cargo
         uses: swatinem/rust-cache@v2
 
-      - name: Run Rust Tests
-        run: cargo test --release
+      - name: Build Ion
+        run: cargo build --profile ${{ matrix.profile }} --locked
 
-      - name: Run JS Runtime Tests
+      - name: Run Rust Unit Tests
+        if: matrix.job_type == 'test'
+        run: cargo test --profile ${{ matrix.profile }} --lib --locked
+
+      - name: Run Rust Integration Tests
+        if: matrix.job_type == 'test'
+        run: cargo test --profile ${{ matrix.profile }} --tests --locked
+
+      - name: Run Full Test Suite
+        if: matrix.os == 'ubuntu-latest' && matrix.profile == 'debug' && matrix.job_type == 'test'
+        run: make test
+
+      - name: Run Benchmarks
+        if: matrix.job_type == 'bench'
+        run: make bench
+
+      - name: Run Examples
+        if: matrix.os == 'ubuntu-latest' && matrix.profile == 'debug' && matrix.job_type == 'test'
+        run: make examples
+
+      - name: Check for test pollution
+        if: matrix.job_type == 'test'
+        run: |
+          if [[ -n $(git status --porcelain) ]]; then
+            echo "Test pollution detected - tests created uncommitted files:"
+            git status --porcelain
+            exit 1
+          fi
+
+      - name: Upload build artifacts
+        if: matrix.os == 'ubuntu-latest' && matrix.profile == 'release' && matrix.job_type == 'test'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ion-${{ matrix.os }}-release
+          path: target/release/ion
+
+  # Additional linting and validation
+  lint:
+    name: Lint (${{ matrix.os }})
+    needs: pre_build
+    if: needs.pre_build.outputs.should_skip != 'true'
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Cache Cargo
+        uses: swatinem/rust-cache@v2
+
+      - name: Build Ion
+        run: cargo build --release --locked
+
+      - name: Run JS Unit Tests
         run: make test-js
+
+      - name: Run JS Benchmarks
+        run: make bench
+
+      - name: Run JS Stress Tests
+        run: make stress
+
+      - name: Run JS Startup Tests
+        run: make start
+
+  # Publish canary builds for main branch
+  publish-canary:
+    name: Publish Canary
+    needs: [pre_build, build, lint]
+    if: github.ref == 'refs/heads/master' && needs.pre_build.outputs.should_skip != 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ion-ubuntu-latest-release
+          path: ./ion-binary
+
+      - name: Make binary executable
+        run: chmod +x ./ion-binary/ion
+
+      - name: Create canary metadata
+        run: |
+          echo "{" > canary-metadata.json
+          echo "  \"version\": \"canary\"," >> canary-metadata.json
+          echo "  \"commit\": \"${{ github.sha }}\"," >> canary-metadata.json
+          echo "  \"date\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"," >> canary-metadata.json
+          echo "  \"platform\": \"linux-x64\"" >> canary-metadata.json
+          echo "}" >> canary-metadata.json
+
+      - name: Upload canary build
+        uses: actions/upload-artifact@v4
+        with:
+          name: ion-canary-linux-x64
+          path: |
+            ./ion-binary/ion
+            canary-metadata.json

@@ -1,0 +1,34 @@
+name: PR Title Lint
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize]
+
+jobs:
+  pr-title-lint:
+    name: Validate PR Title
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate PR title format
+        run: |
+          PR_TITLE="${{ github.event.pull_request.title }}"
+
+          # Check for conventional commit format
+          if [[ ! "$PR_TITLE" =~ ^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\(.+\))?: ]]; then
+            echo "❌ PR title must follow conventional commit format:"
+            echo "   <type>(<scope>): <description>"
+            echo ""
+            echo "   Types: feat, fix, docs, style, refactor, test, chore, perf, ci, build, revert"
+            echo "   Example: 'feat: add new file system API'"
+            echo ""
+            echo "   Current title: '$PR_TITLE'"
+            exit 1
+          fi
+
+          # Check length
+          if [[ ${#PR_TITLE} -gt 72 ]]; then
+            echo "❌ PR title too long (${#PR_TITLE} chars, max 72)"
+            exit 1
+          fi
+
+          echo "✅ PR title format is valid"

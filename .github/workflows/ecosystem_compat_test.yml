@@ -1,0 +1,54 @@
+name: Ecosystem Compatibility Tests
+
+on:
+  schedule:
+    # Run daily at 10:00 UTC
+    - cron: '0 10 * * *'
+  workflow_dispatch:
+
+jobs:
+  ecosystem-test:
+    name: Ecosystem Compatibility (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Cargo
+        uses: swatinem/rust-cache@v2
+
+      - name: Build Ion
+        run: cargo build --release --locked
+
+      - name: Test FS API Examples
+        run: make examples-fs
+
+      - name: Test Basic Runtime Functionality
+        run: |
+          # Test basic JavaScript execution
+          echo 'console.log("Hello from Ion!");' | ./target/release/ion
+
+          # Test basic file operations
+          echo 'Ion.fs.writeTextFileSync("test.txt", "Hello World"); console.log("File written");' | ./target/release/ion
+          echo 'console.log(Ion.fs.readTextFileSync("test.txt"));' | ./target/release/ion
+
+      - name: Generate Test Report
+        run: |
+          echo "## Ecosystem Compatibility Test Results" > test-report.md
+          echo "- **Date**: $(date)" >> test-report.md
+          echo "- **OS**: ${{ matrix.os }}" >> test-report.md
+          echo "- **Status**: ✅ Passed" >> test-report.md
+          echo "- **Tests Run**: FS API Examples, Basic Runtime Tests" >> test-report.md
+
+      - name: Upload Test Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: ecosystem-test-report-${{ matrix.os }}
+          path: test-report.md
