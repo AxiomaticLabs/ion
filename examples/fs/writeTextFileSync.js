@@ -35,12 +35,8 @@ Ion.fs.writeTextFileSync('data.csv', csvData);
 console.log('Created data.csv');
 
 // Append to an existing file (read + write)
-let existingContent = '';
-try {
-    existingContent = Ion.fs.readTextFileSync('log.txt');
-} catch (e) {
-    // File doesn't exist, start empty
-}
+Ion.fs.writeTextFileSync('log.txt', 'Initial log entry\n');
+const existingContent = Ion.fs.readTextFileSync('log.txt');
 const newContent = existingContent + 'New log entry\n';
 Ion.fs.writeTextFileSync('log.txt', newContent);
 console.log('Appended to log.txt');

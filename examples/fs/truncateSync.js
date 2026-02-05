@@ -20,6 +20,7 @@ Ion.fs.truncateSync('app.log', 0);
 console.log('After truncation:', Ion.fs.fileSize('app.log'), 'bytes');
 
 // Truncate a binary file to remove footer
+Ion.fs.writeFileSync('data.bin', new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8])); // Create file first
 const originalSize = Ion.fs.fileSize('data.bin');
 Ion.fs.truncateSync('data.bin', originalSize - 4); // Remove last 4 bytes
 console.log('Removed 4-byte footer from binary file');
@@ -30,6 +31,7 @@ Ion.fs.truncateSync('template.txt', 1024); // Make exactly 1KB
 console.log('Created 1KB file');
 
 // Truncate based on content analysis
+Ion.fs.writeTextFileSync('document.txt', 'Line 1\nLine 2\nLine 3\nLine 4\nLine 5\nLine 6\n'); // Create file first
 const content = Ion.fs.readTextFileSync('document.txt');
 const lines = content.split('\n');
 const firstHalf = lines.slice(0, Math.floor(lines.length / 2)).join('\n');
@@ -38,12 +40,13 @@ Ion.fs.truncateSync('document.txt', firstHalf.length);
 console.log('Kept only first half of document');
 
 // Truncate log files to prevent them from growing too large
+Ion.fs.writeTextFileSync('debug.log', 'A'.repeat(2048)); // Create a larger log file
 const maxLogSize = 1024 * 1024; // 1MB
 const currentSize = Ion.fs.fileSize('debug.log');
 if (currentSize > maxLogSize) {
     const keepSize = maxLogSize / 2;
-    const content = Ion.fs.readTextFileSync('debug.log');
-    const truncatedContent = content.slice(-keepSize); // Keep last half
+    const logContent = Ion.fs.readTextFileSync('debug.log');
+    const truncatedContent = logContent.slice(-keepSize); // Keep last half
     Ion.fs.writeTextFileSync('debug.log', truncatedContent);
     Ion.fs.truncateSync('debug.log', truncatedContent.length);
     console.log('Truncated log file to prevent excessive growth');

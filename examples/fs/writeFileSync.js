@@ -40,7 +40,7 @@ Ion.fs.writeFileSync('structured.bin', new Uint8Array(buffer));
 console.log('Created structured.bin');
 
 // Copy and modify binary data
-const originalData = Ion.fs.readFileSync('source.bin');
+const originalData = Ion.fs.readFileSync('binary.dat'); // Use the file we created earlier
 const modifiedData = new Uint8Array(originalData.length);
 modifiedData.set(originalData);
 // Modify some bytes

@@ -9,9 +9,19 @@ console.log('Renamed file: old-name.txt -> new-name.txt');
 Ion.fs.renameSync('file.txt', 'archive/file.txt');
 console.log('Moved file to archive directory');
 
-// Rename multiple files with a pattern
-const files = Ion.fs.readDirSync('.').filter(f => f.startsWith('temp_'));
-files.forEach(file => {
+// Rename multiple files with a pattern (manual implementation)
+Ion.fs.writeTextFileSync('temp_file1.txt', 'content1');
+Ion.fs.writeTextFileSync('temp_file2.txt', 'content2');
+const allFiles = Ion.fs.readDirSync('.');
+const tempFiles = [];
+for (let i = 0; i < allFiles.length; i++) {
+    const f = allFiles[i];
+    const fileName = typeof f === 'string' ? f : f.name || f.toString();
+    if (fileName.indexOf('temp_') === 0) {
+        tempFiles.push(fileName);
+    }
+}
+tempFiles.forEach(file => {
     const newName = file.replace('temp_', 'final_');
     Ion.fs.renameSync(file, newName);
     console.log(`Renamed: ${file} -> ${newName}`);

@@ -8,32 +8,45 @@ entries.forEach(entry => {
     console.log(`  ${entry}`);
 });
 
-// List files in a specific directory
+// List files in a specific directory (create it first)
+Ion.fs.mkdirSync('config', { recursive: true });
+Ion.fs.writeTextFileSync('config/app.json', '{"name": "test"}');
+Ion.fs.writeTextFileSync('config/settings.json', '{"debug": true}');
 const configFiles = Ion.fs.readDirSync('config/');
 console.log('Config files:');
 configFiles.forEach(file => {
     console.log(`  ${file}`);
 });
 
-// Filter for specific file types
-const allFiles = Ion.fs.readDirSync('src/');
-const jsFiles = allFiles.filter(file => file.endsWith('.js'));
-console.log('JavaScript files in src/:');
+// Filter for specific file types (manual implementation)
+const allFiles = Ion.fs.readDirSync('.');
+const jsFiles = [];
+for (let i = 0; i < allFiles.length; i++) {
+    const file = allFiles[i];
+    if (file.indexOf('.js') === file.length - 3) {
+        jsFiles.push(file);
+    }
+}
+console.log('JavaScript files in current dir:');
 jsFiles.forEach(file => {
     console.log(`  ${file}`);
 });
 
 // Count files by extension
-const files = Ion.fs.readDirSync('documents/');
+const files = Ion.fs.readDirSync('.');
 const extensionCount = {};
 files.forEach(file => {
-    const ext = file.split('.').pop();
-    extensionCount[ext] = (extensionCount[ext] || 0) + 1;
+    const parts = file.split('.');
+    const ext = parts[parts.length - 1];
+    if (!extensionCount[ext]) {
+        extensionCount[ext] = 0;
+    }
+    extensionCount[ext]++;
 });
-console.log('File extensions:');
-Object.entries(extensionCount).forEach(([ext, count]) => {
-    console.log(`  .${ext}: ${count} files`);
-});
+console.log('File count by extension:');
+for (const ext in extensionCount) {
+    console.log(`  .${ext}: ${extensionCount[ext]} files`);
+}
 
 // Find the largest file in a directory
 const dirFiles = Ion.fs.readDirSync('data/');

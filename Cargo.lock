@@ -719,6 +719,7 @@ dependencies = [
 name = "ion"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "deno_core",
  "libc",
  "tokio",

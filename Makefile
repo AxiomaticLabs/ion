@@ -43,5 +43,35 @@ start: release
 		$(BIN) $$file; \
 	done
 
+# 6. Examples (All examples in examples/ directory)
+examples: release
+	@echo "🚀 Running All Ion Examples"
+	@echo "================================"
+	@find examples -name "*.js" -type f | sort | while read -r file; do \
+		echo ""; \
+		echo "📄 Running: $$file"; \
+		echo "----------------------------------------"; \
+		$(BIN) $$file 2>&1; \
+		echo "----------------------------------------"; \
+		echo "✅ Completed: $$file"; \
+	done
+	@echo ""
+	@echo "🎉 All Examples Completed Successfully!"
+
+# 7. FS Examples (examples/fs/ directory)
+examples-fs: release
+	@echo "📁 Running Ion FS API Examples"
+	@echo "=================================="
+	@find examples/fs -name "*.js" -type f | sort | while read -r file; do \
+		echo ""; \
+		echo "📄 Running: $$file"; \
+		echo "----------------------------------------"; \
+		$(BIN) $$file 2>&1; \
+		echo "----------------------------------------"; \
+		echo "✅ Completed: $$file"; \
+	done
+	@echo ""
+	@echo "🎉 All FS Examples Completed Successfully!"
+
 release:
 	@cargo build --release --quiet

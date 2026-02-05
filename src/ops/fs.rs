@@ -4,7 +4,7 @@
 
 use deno_core::op2;
 use std::fs;
-use std::io::Read;
+use std::io::{self, Read};
 
 // Basic file reading and writing - the bread and butter operations
 // These handle the most common file I/O tasks
@@ -13,8 +13,8 @@ use std::io::Read;
 /// Simple and straightforward - just give it a path and get the text back
 #[op2]
 #[string]
-fn op_fs_read_text_file(#[string] path: String) -> String {
-    fs::read_to_string(path).unwrap()
+fn op_fs_read_text_file(#[string] path: String) -> Result<String, io::Error> {
+    fs::read_to_string(path)
 }
 
 /// Quick way to check how big a file is without reading it
@@ -28,30 +28,30 @@ fn op_fs_file_size(#[string] path: String) -> u32 {
 /// Good for binary files or when you need the exact bytes
 #[op2]
 #[buffer]
-fn op_fs_read_file(#[string] path: String) -> Vec<u8> {
-    fs::read(path).unwrap()
+fn op_fs_read_file(#[string] path: String) -> Result<Vec<u8>, io::Error> {
+    fs::read(path)
 }
 
 /// Write text to a file
 /// Will create the file if it doesn't exist, overwrite if it does
 #[op2(fast)]
-fn op_fs_write_text_file(#[string] path: String, #[string] content: String) {
-    fs::write(path, content).unwrap();
+fn op_fs_write_text_file(#[string] path: String, #[string] content: String) -> Result<(), io::Error> {
+    fs::write(path, content)
 }
 
 /// Write raw bytes to a file
 /// Same as above but for binary data
 #[op2(fast)]
-fn op_fs_write_file(#[string] path: String, #[buffer] data: &[u8]) {
-    fs::write(path, data).unwrap();
+fn op_fs_write_file(#[string] path: String, #[buffer] data: &[u8]) -> Result<(), io::Error> {
+    fs::write(path, data)
 }
 
 /// Read file data directly into a buffer you provide
 /// More efficient when you already have a buffer allocated
 #[op2(fast)]
-fn op_fs_read_into(#[string] path: String, #[buffer] buf: &mut [u8]) {
-    let mut file = fs::File::open(path).unwrap();
-    file.read_exact(buf).unwrap();
+fn op_fs_read_into(#[string] path: String, #[buffer] buf: &mut [u8]) -> Result<(), io::Error> {
+    let mut file = fs::File::open(path)?;
+    file.read_exact(buf)
 }
 
 // Directory operations - these are trickier because we want maximum speed

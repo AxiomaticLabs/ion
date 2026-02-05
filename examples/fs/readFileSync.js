@@ -1,24 +1,31 @@
 // Example: Reading a binary file
 // This demonstrates how to read the entire contents of a file as raw bytes
 
-// Read an image file
-const imageData = Ion.fs.readFileSync('photo.jpg');
-console.log('Image size:', imageData.length, 'bytes');
+// Create and read a binary data file
+const binaryData = new Uint8Array([0x00, 0x01, 0x02, 0x03, 0xFF, 0xFE, 0xFD, 0xFC]);
+Ion.fs.writeFileSync('data.bin', binaryData);
+const readBinaryData = Ion.fs.readFileSync('data.bin');
+console.log('Binary data size:', readBinaryData.length, 'bytes');
 
-// Read a compressed archive
-const zipData = Ion.fs.readFileSync('archive.zip');
-console.log('Archive size:', zipData.length, 'bytes');
-
-// Read a binary data file and process it
-const binaryData = Ion.fs.readFileSync('data.bin');
 // Process the binary data (example: extract integers)
-const view = new DataView(binaryData.buffer);
+const view = new DataView(readBinaryData.buffer);
 const firstInt = view.getUint32(0, true); // little-endian
 console.log('First integer:', firstInt);
 
-// Read a PDF file
-const pdfData = Ion.fs.readFileSync('document.pdf');
-console.log('PDF size:', pdfData.length, 'bytes');
+// Create and read a simple "image" file (fake data)
+const imageData = new Uint8Array(1024); // 1KB of fake image data
+for (let i = 0; i < imageData.length; i++) {
+    imageData[i] = i % 256;
+}
+Ion.fs.writeFileSync('photo.jpg', imageData);
+const readImageData = Ion.fs.readFileSync('photo.jpg');
+console.log('Image size:', readImageData.length, 'bytes');
+
+// Create and read a "compressed archive" (fake data)
+const zipData = new Uint8Array([0x50, 0x4B, 0x03, 0x04]); // Fake ZIP header
+Ion.fs.writeFileSync('archive.zip', zipData);
+const readZipData = Ion.fs.readFileSync('archive.zip');
+console.log('Archive size:', readZipData.length, 'bytes');
 
 // Read a video file for processing
 const videoData = Ion.fs.readFileSync('video.mp4');

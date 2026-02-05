@@ -7,3 +7,4 @@ edition = "2024"
 deno_core = "0.384.0"
 tokio = { version = "1", features = ["full"] }
 libc = "0.2"
+anyhow = "1.0"

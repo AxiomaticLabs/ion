@@ -50,7 +50,17 @@ Ion.fs.copyFileSync('database.db', 'database.db.backup');
 console.log('Created database backup');
 
 // Copy log files for archiving
-const logFiles = Ion.fs.readDirSync('logs/').filter(f => f.endsWith('.log'));
+Ion.fs.mkdirSync('logs', { recursive: true });
+Ion.fs.writeTextFileSync('logs/app.log', 'log data');
+Ion.fs.writeTextFileSync('logs/error.log', 'error data');
+const allLogFiles = Ion.fs.readDirSync('logs/');
+const logFiles = [];
+for (let i = 0; i < allLogFiles.length; i++) {
+    const f = allLogFiles[i];
+    if (f.indexOf('.log') === f.length - 4) {
+        logFiles.push(f);
+    }
+}
 logFiles.forEach(logFile => {
     const archiveName = `archive/${logFile}`;
     Ion.fs.copyFileSync(`logs/${logFile}`, archiveName);
