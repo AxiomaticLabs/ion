@@ -22,3 +22,9 @@ Ion.fs.writeTextFileSync('template.html', '<html><head><title>{{title}}</title><
 const template = Ion.fs.readTextFileSync('template.html');
 const rendered = template.replace('{{title}}', 'My App');
 console.log('Rendered template:', rendered);
+
+// Cleanup created files
+Ion.fs.removeSync('config.json');
+Ion.fs.removeSync('src/main.js');
+Ion.fs.removeSync('app.log');
+Ion.fs.removeSync('template.html');
