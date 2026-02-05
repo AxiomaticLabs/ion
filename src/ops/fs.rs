@@ -105,7 +105,8 @@ pub fn op_fs_read_dir(#[string] path: String) -> (Vec<String>, Vec<u32>) {
 
             // Skip "." and ".." - nobody wants those
             if *d_name == b'.' as i8
-                && (name_len == 1 || (name_len == 2 && *d_name.offset(1) == b'.' as i8)) {
+                && (name_len == 1 || (name_len == 2 && *d_name.offset(1) == b'.' as i8))
+            {
                 continue;
             }
 
