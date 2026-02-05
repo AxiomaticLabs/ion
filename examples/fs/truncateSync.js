@@ -56,3 +56,13 @@ if (currentSize > maxLogSize) {
 Ion.fs.writeTextFileSync('sparse.txt', 'Header');
 Ion.fs.truncateSync('sparse.txt', 1024 * 1024); // 1MB file
 console.log('Created 1MB sparse file');
+
+// Cleanup created files
+Ion.fs.removeSync('large-file.txt');
+Ion.fs.removeSync('small.txt');
+Ion.fs.removeSync('app.log');
+Ion.fs.removeSync('data.bin');
+Ion.fs.removeSync('template.txt');
+Ion.fs.removeSync('document.txt');
+Ion.fs.removeSync('debug.log');
+Ion.fs.removeSync('sparse.txt');
