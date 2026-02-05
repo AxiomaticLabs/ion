@@ -22,12 +22,12 @@ console.log('Header bytes:', Array.from(headerBuffer.slice(0, 16)));
 // Read into a buffer for streaming processing
 const textData = 'This is a small text file for testing readInto functionality.';
 Ion.fs.writeTextFileSync('small-file.txt', textData);
-const fileSize = Ion.fs.fileSize('small-file.txt');
-const chunkBuffer = new Uint8Array(fileSize); // Make buffer exactly the right size
+const textFileSize = Ion.fs.fileSize('small-file.txt');
+const chunkBuffer = new Uint8Array(textFileSize); // Make buffer exactly the right size
 // Note: readInto reads the entire file into the buffer
 Ion.fs.readInto('small-file.txt', chunkBuffer);
 console.log('Actual data size:', chunkBuffer.length, 'bytes');
-console.log('Actual data length:', actualData.length);
+console.log('Actual data length:', chunkBuffer.length);
 
 // Read a configuration block
 const configSize = 256;
@@ -35,3 +35,8 @@ const configBuffer = new Uint8Array(configSize);
 Ion.fs.readInto('config.dat', configBuffer);
 const configText = new TextDecoder().decode(configBuffer);
 console.log('Config:', configText.trim());
+
+// Cleanup created files
+Ion.fs.removeSync('data.bin');
+Ion.fs.removeSync('large-file.dat');
+Ion.fs.removeSync('small-file.txt');
