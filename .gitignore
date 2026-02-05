@@ -1,2 +1,19 @@
-/target
-large_file.txt
+# Rust build artifacts
+target/
+**/target/
+
+# Test artifacts
+*.txt
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Log files
+*.log
