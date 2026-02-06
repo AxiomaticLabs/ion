@@ -1,0 +1,66 @@
+name: Release
+
+# Trigger ONLY when you push a tag like "v0.1.0", "v1.0.0"
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write # Required to create the Release
+
+jobs:
+  build-and-upload:
+    name: Build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            binary_name: ion
+            asset_name: ion-linux-amd64
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            binary_name: ion
+            asset_name: ion-macos-amd64
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            binary_name: ion.exe
+            asset_name: ion-windows-amd64.exe
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # 1. Install Rust
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      # 2. Cache Dependencies (Speeds up build)
+      - name: Cache Cargo
+        uses: swatinem/rust-cache@v2
+
+      # 3. Build Binary (Release Mode)
+      - name: Build
+        run: cargo build --release --target ${{ matrix.target }}
+
+      # 4. Prepare Asset (Rename binary to be unique)
+      - name: Rename Binary
+        shell: bash
+        run: |
+          # Go to target release folder
+          cd target/${{ matrix.target }}/release
+          # Rename 'ion' to 'ion-linux-amd64' etc.
+          mv ${{ matrix.binary_name }} ../../../${{ matrix.asset_name }}
+          cd ../../..
+
+      # 5. Create Release & Upload Asset
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: ${{ matrix.asset_name }}
+          generate_release_notes: true # Auto-generates notes from PRs!
