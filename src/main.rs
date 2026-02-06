@@ -12,6 +12,12 @@ async fn main() -> Result<(), AnyError> {
     // Get the command line args
     let args: Vec<String> = env::args().collect();
 
+    // Handle --version flag
+    if args.len() == 2 && args[1] == "--version" {
+        println!("ion {}", env!("CARGO_PKG_VERSION"));
+        return Ok(());
+    }
+
     // Need at least one argument (the JS file to run)
     if args.len() < 2 {
         eprintln!("Usage: {} <js_file>", args[0]);

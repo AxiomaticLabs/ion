@@ -8,3 +8,10 @@ deno_core = "0.384.0"
 tokio = { version = "1", features = ["full"] }
 libc = "0.2"
 anyhow = "1.0"
+
+[profile.release]
+codegen-units = 1      # Compiles slower, but allows better optimization
+lto = true             # Link Time Optimization (removes unused code)
+opt-level = "z"        # Optimize for binary size ("s" is also good)
+panic = "abort"        # Removes panic unwinding logic (saves space)
+strip = true           # AUTOMATICALLY REMOVES DEBUG SYMBOLS (The Big One)
