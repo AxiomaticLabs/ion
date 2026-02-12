@@ -4,7 +4,7 @@ version = "0.1.1"
 edition = "2024"
 
 [dependencies]
-deno_core = "0.384.0"
+deno_core = "0.385.0"
 tokio = { version = "1", features = ["full"] }
 libc = "0.2"
 anyhow = "1.0"
