@@ -19,9 +19,9 @@ dependencies = [
 
 [[package]]
 name = "anyhow"
-version = "1.0.101"
+version = "1.0.102"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5f0e0fee31ef5ed1ba1316088939cea399010ed7731dba877ed44aeb407a75ea"
+checksum = "7f202df86484c868dbad7eaa557ef785d5c66295e41b460ef922eca0723b842c"
 
 [[package]]
 name = "autocfg"
@@ -227,9 +227,9 @@ dependencies = [
 
 [[package]]
 name = "deno_core"
-version = "0.384.0"
+version = "0.386.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9ce154c5b2f859eb7249306dceee5842cf20ebe7c01af6b358dc0085bcf3db6e"
+checksum = "f5cdb60d25f7e87f7f3bb5b1fcbd8d059ab908d614c0ad67dafce7f6c1514f08"
 dependencies = [
  "anyhow",
  "az",
@@ -247,6 +247,7 @@ dependencies = [
  "deno_unsync",
  "futures",
  "indexmap",
+ "inventory",
  "libc",
  "parking_lot",
  "percent-encoding",
@@ -297,9 +298,9 @@ dependencies = [
 
 [[package]]
 name = "deno_ops"
-version = "0.260.0"
+version = "0.262.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1bbdb3a9e37a8a3764cfa5edd13d39258ea2d577041416c0f191e68896647654"
+checksum = "34b785cc3c336f7414d49a05119fa001ced8dff3150fdda671fc11eb4ccd15f4"
 dependencies = [
  "indexmap",
  "proc-macro2",
@@ -716,6 +717,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "inventory"
+version = "0.3.22"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "009ae045c87e7082cb72dab0ccd01ae075dd00141ddc108f43a0ea150a9e7227"
+dependencies = [
+ "rustversion",
+]
+
+[[package]]
 name = "ion"
 version = "0.1.1"
 dependencies = [
@@ -758,9 +768,9 @@ dependencies = [
 
 [[package]]
 name = "libc"
-version = "0.2.180"
+version = "0.2.182"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bcc35a38544a891a5f7c865aca548a982ccb3b8650a5b06d0fd33a10283c56fc"
+checksum = "6800badb6cb2082ffd7b6a67e6125bb39f18782f793520caee8cb8846be06112"
 
 [[package]]
 name = "libloading"
@@ -1140,9 +1150,9 @@ dependencies = [
 
 [[package]]
 name = "serde_v8"
-version = "0.293.0"
+version = "0.295.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d234411ee92c36dcf84403f8fd4ca58806952fdc51dc0668beb91bb8e19fd9e8"
+checksum = "cb620fe7d5bf70c50297bdd48621b1c365c0f6535e607a1b0aaab961939fe3e8"
 dependencies = [
  "deno_error",
  "num-bigint",
@@ -1269,9 +1279,9 @@ dependencies = [
 
 [[package]]
 name = "syn-match"
-version = "0.3.0"
+version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "783c4140d7ed89f37116e865b49e5a9fdd28608b9071a9dd1e158b50fc0a31fc"
+checksum = "54b8f0a9004d6aafa6a588602a1119e6cdaacec9921aa1605383e6e7d6258fd6"
 dependencies = [
  "proc-macro2",
  "quote",
