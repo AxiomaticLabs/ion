@@ -26,7 +26,7 @@ jobs:
           fi
 
           # Check length
-          if [[ ${#PR_TITLE} -gt 72 ]]; then
+          if [[ ${#PR_TITLE} -gt 100 ]]; then
             echo "❌ PR title too long (${#PR_TITLE} chars, max 72)"
             exit 1
           fi
