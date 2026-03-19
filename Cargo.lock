@@ -19,9 +19,9 @@ dependencies = [
 
 [[package]]
 name = "anyhow"
-version = "1.0.101"
+version = "1.0.102"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5f0e0fee31ef5ed1ba1316088939cea399010ed7731dba877ed44aeb407a75ea"
+checksum = "7f202df86484c868dbad7eaa557ef785d5c66295e41b460ef922eca0723b842c"
 
 [[package]]
 name = "autocfg"
@@ -227,9 +227,9 @@ dependencies = [
 
 [[package]]
 name = "deno_core"
-version = "0.384.0"
+version = "0.392.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9ce154c5b2f859eb7249306dceee5842cf20ebe7c01af6b358dc0085bcf3db6e"
+checksum = "afb39ee05f067d8803ddd23377310d81bcece0ef8d6441726b3321aa71489b7e"
 dependencies = [
  "anyhow",
  "az",
@@ -247,6 +247,7 @@ dependencies = [
  "deno_unsync",
  "futures",
  "indexmap",
+ "inventory",
  "libc",
  "parking_lot",
  "percent-encoding",
@@ -272,9 +273,9 @@ checksum = "a9efff8990a82c1ae664292507e1a5c6749ddd2312898cdf9cd7cb1fd4bc64c6"
 
 [[package]]
 name = "deno_error"
-version = "0.7.3"
+version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3007d3f1ea92ea503324ae15883aac0c2de2b8cf6fead62203ff6a67161007ab"
+checksum = "bfafd2219b29886a71aecbb3449e462deed1b2c474dc5b12f855f0e58c478931"
 dependencies = [
  "deno_error_macro",
  "libc",
@@ -286,9 +287,9 @@ dependencies = [
 
 [[package]]
 name = "deno_error_macro"
-version = "0.7.3"
+version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9b565e60a9685cdf312c888665b5f8647ac692a7da7e058a5e2268a466da8eaf"
+checksum = "1c28ede88783f14cd8aae46ca89f230c226b40e4a81ab06fa52ed72af84beb2f"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -297,9 +298,9 @@ dependencies = [
 
 [[package]]
 name = "deno_ops"
-version = "0.260.0"
+version = "0.268.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1bbdb3a9e37a8a3764cfa5edd13d39258ea2d577041416c0f191e68896647654"
+checksum = "eb2e794e7ed4ba606ae862b92859cf4ce4148f5c2381b6e4d10014d54338ced6"
 dependencies = [
  "indexmap",
  "proc-macro2",
@@ -713,6 +714,17 @@ checksum = "7714e70437a7dc3ac8eb7e6f8df75fd8eb422675fc7678aff7364301092b1017"
 dependencies = [
  "equivalent",
  "hashbrown",
+ "serde",
+ "serde_core",
+]
+
+[[package]]
+name = "inventory"
+version = "0.3.22"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "009ae045c87e7082cb72dab0ccd01ae075dd00141ddc108f43a0ea150a9e7227"
+dependencies = [
+ "rustversion",
 ]
 
 [[package]]
@@ -758,9 +770,9 @@ dependencies = [
 
 [[package]]
 name = "libc"
-version = "0.2.180"
+version = "0.2.183"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bcc35a38544a891a5f7c865aca548a982ccb3b8650a5b06d0fd33a10283c56fc"
+checksum = "b5b646652bf6661599e1da8901b3b9522896f01e736bad5f723fe7a3a27f899d"
 
 [[package]]
 name = "libloading"
@@ -1140,9 +1152,9 @@ dependencies = [
 
 [[package]]
 name = "serde_v8"
-version = "0.293.0"
+version = "0.301.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d234411ee92c36dcf84403f8fd4ca58806952fdc51dc0668beb91bb8e19fd9e8"
+checksum = "7029ef68b93acc7997cca3205a517d5e8b6e0a480eb0beece77a0496b73ff89f"
 dependencies = [
  "deno_error",
  "num-bigint",
@@ -1269,9 +1281,9 @@ dependencies = [
 
 [[package]]
 name = "syn-match"
-version = "0.3.0"
+version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "783c4140d7ed89f37116e865b49e5a9fdd28608b9071a9dd1e158b50fc0a31fc"
+checksum = "54b8f0a9004d6aafa6a588602a1119e6cdaacec9921aa1605383e6e7d6258fd6"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1393,9 +1405,9 @@ dependencies = [
 
 [[package]]
 name = "tokio"
-version = "1.49.0"
+version = "1.50.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "72a2903cd7736441aac9df9d7688bd0ce48edccaadf181c3b90be801e81d3d86"
+checksum = "27ad5e34374e03cfffefc301becb44e9dc3c17584f414349ebe29ed26661822d"
 dependencies = [
  "bytes",
  "libc",
@@ -1462,9 +1474,9 @@ dependencies = [
 
 [[package]]
 name = "v8"
-version = "145.0.0"
+version = "146.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "61d9a107e16bae35a0be2bb0096ac1d2318aac352c82edd796ab2b9cac66d8f0"
+checksum = "67519d234f7bc5a54a71f7fbc52258b0f3a7e9c11f365213d49016a59207ec10"
 dependencies = [
  "bindgen",
  "bitflags",
