@@ -227,9 +227,9 @@ dependencies = [
 
 [[package]]
 name = "deno_core"
-version = "0.392.0"
+version = "0.397.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "afb39ee05f067d8803ddd23377310d81bcece0ef8d6441726b3321aa71489b7e"
+checksum = "58f7d1f9e7e66160164ea5ec379d58b56446afc568dff83fb9d7ef1fd3fb4a21"
 dependencies = [
  "anyhow",
  "az",
@@ -298,9 +298,9 @@ dependencies = [
 
 [[package]]
 name = "deno_ops"
-version = "0.268.0"
+version = "0.273.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "eb2e794e7ed4ba606ae862b92859cf4ce4148f5c2381b6e4d10014d54338ced6"
+checksum = "1f7c28530a506ec61d8065fd772669961e3df56c418bee9ea5df3eab29e64b1d"
 dependencies = [
  "indexmap",
  "proc-macro2",
@@ -770,9 +770,9 @@ dependencies = [
 
 [[package]]
 name = "libc"
-version = "0.2.183"
+version = "0.2.184"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b5b646652bf6661599e1da8901b3b9522896f01e736bad5f723fe7a3a27f899d"
+checksum = "48f5d2a454e16a5ea0f4ced81bd44e4cfc7bd3a507b61887c99fd3538b28e4af"
 
 [[package]]
 name = "libloading"
@@ -1152,9 +1152,9 @@ dependencies = [
 
 [[package]]
 name = "serde_v8"
-version = "0.301.0"
+version = "0.306.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7029ef68b93acc7997cca3205a517d5e8b6e0a480eb0beece77a0496b73ff89f"
+checksum = "9741cf5a91953f46cd49d5d20152d49e0cc4eddc4ce4c6d964a855f30254c642"
 dependencies = [
  "deno_error",
  "num-bigint",
@@ -1474,9 +1474,9 @@ dependencies = [
 
 [[package]]
 name = "v8"
-version = "146.8.0"
+version = "147.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "67519d234f7bc5a54a71f7fbc52258b0f3a7e9c11f365213d49016a59207ec10"
+checksum = "a98a7a54a2cbb941924658340efeff052840ab2dcb925c34260142ba85310023"
 dependencies = [
  "bindgen",
  "bitflags",
